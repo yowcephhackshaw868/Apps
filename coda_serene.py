@@ -39,8 +39,10 @@ st.markdown("""
 # --- 2. THE AI GENERATOR ---
 import json
 
+import json
+
 def generate_roadmap(problem, persona, focus, domain):
-    """Calls Gemini to generate a highly tailored, first-person 3-phase roadmap using JSON."""
+    """Calls Gemini to generate a highly tailored, first-person 3-phase roadmap with custom user prompts."""
     prompt = f"""
     You are an AI collaborator helping a user solve a problem. 
     Act as: {persona}.
@@ -49,25 +51,29 @@ def generate_roadmap(problem, persona, focus, domain):
     
     The user is facing this issue: "{problem}"
     
-    Provide your response in raw JSON format with exactly these 6 string keys:
+    Provide your response in raw JSON format with exactly these 9 string keys:
     "HEADER": A short, supportive 3-5 word title for this specific challenge.
     "STRATEGY": A warm, grounding 1-2 sentence high-level strategy to de-escalate or focus.
     "INSIGHT": A personal insight on how to approach this given the user's focus.
+    
     "P1": What is the immediate triage or first step to stop the bleeding?
+    "P1_PROMPT": A specific, short question or fill-in-the-blank prompt asking the user how they will execute or feel about Phase 1.
+    
     "P2": How do they build momentum or execute the core solution next?
+    "P2_PROMPT": A specific question asking the user to brainstorm or define their first milestone for Phase 2.
+    
     "P3": What is the long-term resolution or system to prevent it?
+    "P3_PROMPT": A specific question asking the user how they will hold themselves accountable or build a system for Phase 3.
 
     Speak in the first person. Do not quote back the user's settings. Do not use the words 'Phase 1', 'Phase 2', or 'Phase 3' in your actual answers.
     """
     
     try:
-        # Force the model to reply strictly in JSON format
         response = model.generate_content(
             prompt,
             generation_config={"response_mime_type": "application/json"}
         )
         
-        # Parse the JSON grid directly! No more buggy text splitting.
         data = json.loads(response.text)
         
         return (
@@ -75,10 +81,15 @@ def generate_roadmap(problem, persona, focus, domain):
             data.get("STRATEGY", "Let's take a breath and handle this step by step."),
             data.get("INSIGHT", "Here is how I see us approaching this."),
             data.get("P1", "Take a step back to assess the immediate needs."),
+            data.get("P1_PROMPT", "What is one immediate action you can take right now?"),
             data.get("P2", "Build on your initial actions to gain steady ground."),
-            data.get("P3", "Map out a routine to ensure this doesn't repeat.")
+            data.get("P2_PROMPT", "What does making progress on this look like to you?"),
+            data.get("P3", "Map out a routine to ensure this doesn't repeat."),
+            data.get("P3_PROMPT", "How can we make sure this plan sticks long-term?")
         )
         
+    except Exception as e:
+        return "Error", f"Could not build layout: {str(e)}", "Please try clicking the button again.", "Error", "Error", "Error", "Error", "Error"
     except Exception as e:
         # If the JSON failed to parse or there's an API error
         return "Error", f"Could not build layout: {str(e)}", "Please try clicking the button again.", "Error", "Error", "Error"
