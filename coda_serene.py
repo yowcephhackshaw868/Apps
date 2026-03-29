@@ -5,10 +5,13 @@ import google.generativeai as genai
 # ⚠️ This key is public now, so remember to replace it in AI Studio later!
 GEMINI_API_KEY = "AIzaSyAgbORpMWLDGI0Yme-QxQ0VgFOexpkl3P8" 
 
-# Now that we've imported it above, line 8 will work perfectly!
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-flash')
-    st.markdown("""
+
+# --- 1. SETTING THE MOOD ---
+st.set_page_config(page_title="Coda", layout="centered")
+
+st.markdown("""
 <style>
 .stButton button { 
     background-color: #10b981 !important; 
