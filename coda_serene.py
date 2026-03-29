@@ -119,7 +119,7 @@ if st.button("Get Help", key="main_btn"):
     if problem_text.strip():
         # Clear old history on a fresh main search
         st.session_state.history = []
-        h, s, i, p1, p2, p3 = generate_roadmap(problem_text, user_persona, user_focus, user_domain)
+        h, s, i, p1, p1_pr, p2, p2_pr, p3, p3_pr = generate_roadmap(problem_text, user_persona, user_focus, user_domain)
         st.session_state.history.append({
             "problem": problem_text, "header": h, "strategy": s, "insight": i,
             "p1": p1, "p2": p2, "p3": p3
