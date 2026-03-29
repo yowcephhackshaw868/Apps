@@ -90,3 +90,19 @@ with col1:
 with col2:
     st.write("Inner Volume")
     stress_val = st.select_slider
+# --- THE ACTION HUB ---
+st.divider()
+
+# This creates the button you click to submit your entry
+if st.button("🔮 CONSULT THE ORACLE", use_container_width=True):
+    # This checks if you actually typed something in the box
+    if problem_text.strip():
+        # This calls the background functions to generate your result
+        astro_info = get_astro_logic(user_dob, user_tob)
+        html_output = get_oracle_guidance(user_name, astro_info, stress_val, domain_choice, problem_text)
+        
+        # This draws the output card on the screen!
+        st.markdown(html_output, unsafe_allow_html=True)
+    else:
+        # This shows a warning if the box was left empty
+        st.warning("State the friction to receive a path.")
