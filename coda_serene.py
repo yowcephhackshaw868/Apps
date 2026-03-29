@@ -115,7 +115,7 @@ st.write("")
 
 if st.button("Get Help"):
     if problem_text.strip():
-        # Line 154 updated to match the 6 outputs!
+        # Grabbing the 6 outputs from your roadmap function
         header, strategy, insight, phase_1, phase_2, phase_3 = get_detailed_guidance(stress_val, user_domain, user_persona, user_focus, problem_text)
         
         st.divider()
@@ -123,4 +123,21 @@ if st.button("Get Help"):
         # This draws the pretty, long-form roadmap card on the screen!
         st.markdown(f"""
             <div class="custom-card">
-                <h2 style='color: #10b981; margin-top: 0;'>{header}
+                <h2 style='color: #10b981; margin-top: 0;'>{header}</h2>
+                <p style='font-size: 1.1em; line-height: 1.6; color: #fce7f3;'><strong>The Strategy:</strong> {strategy}</p>
+                <hr style='border-color: #ec4899; margin: 20px 0;'>
+                <p style='color: #fce7f3; font-size: 1.1em; margin-bottom: 20px;'>{insight}</p>
+                
+                <h4 style='color: #e2e8f0; margin-bottom: 5px;'>Phase 1: Immediate Triage</h4>
+                <p style='color: #fce7f3; margin-bottom: 20px;'>{phase_1}</p>
+                
+                <h4 style='color: #e2e8f0; margin-bottom: 5px;'>Phase 2: Building Momentum</h4>
+                <p style='color: #fce7f3; margin-bottom: 20px;'>{phase_2}</p>
+                
+                <h4 style='color: #e2e8f0; margin-bottom: 5px;'>Phase 3: Long-term Resolution</h4>
+                <p style='color: #fce7f3; margin-bottom: 0;'>{phase_3}</p>
+            </div>
+        """, unsafe_allow_html=True) # <-- This is the triple-quote that was missing!
+            
+    else:
+        st.info("Whenever you are ready, type what's on your mind above and click the button.")
