@@ -6,7 +6,7 @@ import google.generativeai as genai
 GEMINI_API_KEY = "AIzaSyAARJHCZngMW4ybe4labAQ6EvPDDfOu_E4" 
 
 genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-2.5-flash')
 
 # --- 1. SETTING THE MOOD ---
 st.set_page_config(page_title="Coda", layout="centered")
