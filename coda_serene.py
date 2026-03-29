@@ -1,77 +1,72 @@
 import streamlit as st
 from datetime import datetime
 
-# --- 1. SETTING THE MOOD ---
-st.set_page_config(page_title="Coda", layout="centered")
+# --- 1. SETTING THE MOOD & CUSTOM THEME ---
+st.set_page_config(page_title="Coda", layout="wide")
 
-# Smooth, dark mode readable styling
+# Applying your custom palette: Green, Pink, Silver, and Black
 st.markdown("""
     <style>
-    .stApp { background-color: #1a202c !important; }
-    h1, h2, h3, h4, p, span, label { color: #e2e8f0 !important; }
-    
-    .stTextArea textarea, .stTextInput input { 
-        background-color: #ffffff !important; 
-        color: #1a202c !important; 
-        border-radius: 10px;
+    /* 1. Deep Black/Silver background for high contrast */
+    .stApp { 
+        background-color: #0d1117 !important; 
     }
     
+    /* 2. Silver & Soft Pink headers and text */
+    h1, h2, h3, h4, span, label { 
+        color: #e2e8f0 !important; /* Silver */
+    }
+    p {
+        color: #fce7f3 !important; /* Soft Pink */
+    }
+    
+    /* 3. Input boxes (White with black text for readability) */
+    .stTextArea textarea, .stTextInput input, .stSelectbox div[data-baseweb="select"] { 
+        background-color: #ffffff !important; 
+        color: #000000 !important; 
+        border-radius: 12px;
+        border: 2px solid #ec4899 !important; /* Pink Border */
+    }
+    
+    /* 4. The Action Button (Vibrant Green with Black Text) */
     .stButton button { 
-        background-color: #4a5568 !important; 
-        color: white !important; 
-        border-radius: 10px; 
+        background-color: #10b981 !important; /* Green */
+        color: #000000 !important; /* Black details */
+        border-radius: 12px; 
         font-weight: bold;
         height: 3.5em;
         width: 100%;
-        border: none;
+        border: 2px solid #e2e8f0 !important; /* Silver Border */
     }
-    .stButton button:hover { background-color: #2d3748 !important; }
+    .stButton button:hover { 
+        background-color: #059669 !important; 
+        color: #ffffff !important;
+    }
+    
+    /* 5. Custom result cards using the palette */
+    .custom-card {
+        padding: 30px;
+        border-radius: 16px;
+        margin-top: 20px;
+        border: 2px solid #ec4899; /* Pink */
+        background-color: #1f2937; /* Dark Silver/Gray */
+    }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 2. THE ADAPTABLE LOGIC ---
-def get_guidance(stress, problem):
-    # Adapt background color to the energy level
+# --- 2. THE FLESHED-OUT LOGIC ---
+def get_detailed_guidance(stress, domain, persona, focus, problem):
+    # Determine the core energy based on stress
     try:
         stress = int(stress)
     except:
         stress = 5
         
+    # Generate long-form, multi-step advice tailored to your inputs
     if stress >= 8:
-        strategy = "Emergency pause. Do not try to solve the whole puzzle right now."
-        action = "Pick the single smallest piece you can physically touch or do in 60 seconds. Do only that."
-    elif 4 <= stress <= 7:
-        strategy = "Momentum over perfection. Let's keep the wheels turning."
-        action = "Write down just one sentence about what needs to happen next. Don't do it yet, just name it."
-    else:
-        strategy = "Clear skies. This is a great time to organize or enjoy the build."
-        action = "What is one fun or optimizing tweak you can make to this current project?"
-
-    return strategy, action
-
-
-# --- 3. THE INTERFACE ---
-st.title("Coda")
-st.write("Drop your thoughts. Get a clear path forward.")
-
-problem_text = st.text_area("What is on your mind or causing friction right now?", height=150, placeholder="Type freely here...")
-stress_val = st.select_slider("How heavy does it feel? (0 = Light, 10 = Heavy)", options=list(range(11)), value=5)
-
-st.write("") # Clean spacing
-
-if st.button("Find the Next Step"):
-    if problem_text.strip():
-        # Get the simple text strings instead of a big messy HTML block
-        strategy, action = get_guidance(stress_val, problem_text)
-        
-        # Display them using Streamlit's built-in clean containers
-        st.divider()
-        
-        # This creates a pretty, clean callout box without any code leaks!
-        with st.container(border=True):
-            st.subheader("Let's look at this together.")
-            st.write(f"**The Strategy:** {strategy}")
-            st.write(f"**Your Next Step:** {action}")
-            
-    else:
-        st.info("Whenever you are ready, type what's on your mind above.")
+        bg_color = "#4c0519" # Deep dark pink/red for heavy situations
+        header = "🛑 Emergency De-escalation Path"
+        strategy = "When things are this heavy, your only goal is to stop the bleeding and find solid ground. Do not attempt to solve the whole problem today."
+        steps = [
+            "**Step 1 (First 60 Seconds):** Put down whatever you are holding. Take three slow breaths. Feel your feet on the floor. Right now, you are safe.",
+            "**Step 2 (The Next Hour):** Identify the single most urgent thread of this problem. Ignore the rest. What is the one thing that will cause a collapse if not handled? Do only that.",
