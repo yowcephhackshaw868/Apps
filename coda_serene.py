@@ -1,13 +1,21 @@
 import streamlit as st
-from datetime import datetime
+import google.generativeai as genai
+
+# --- 0. API SETUP ---
+# Replace this with your actual Gemini API key to activate the "brain"
+GEMINI_API_KEY = "AIzaSyAARJHCZngMW4ybe4labAQ6EvPDDfOu_E4" 
+
+if GEMINI_API_KEY != "AIzaSyAARJHCZngMW4ybe4labAQ6EvPDDfOu_E4":
+    genai.configure(api_key=GEMINI_API_KEY)
+    model = genai.GenerativeModel('gemini-1.5-flash')
+else:
+    model = None
 
 # --- 1. SETTING THE MOOD ---
 st.set_page_config(page_title="Coda", layout="centered")
 
-# Safe CSS that styles the button and the card border
 st.markdown("""
     <style>
-    /* Vibrant Green Button with Black Text */
     .stButton button { 
         background-color: #10b981 !important; 
         color: #000000 !important; 
@@ -15,193 +23,144 @@ st.markdown("""
         font-weight: bold;
         height: 3.5em;
         width: 100%;
-        border: 2px solid #e2e8f0 !important; /* Silver Border */
+        border: 2px solid #e2e8f0 !important;
     }
     .stButton button:hover { 
         background-color: #059669 !important; 
         color: #ffffff !important;
     }
-    
-    /* Pink border for the output card */
     .custom-card {
         padding: 25px;
         border-radius: 16px;
         margin-top: 20px;
-        border: 2px solid #ec4899; /* Pink */
-        background-color: #1f2937; /* Dark Silver/Gray */
+        margin-bottom: 20px;
+        border: 2px solid #ec4899; 
+        background-color: #1f2937; 
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 2. THE MALLEABLE LOGIC (With Full Roadmaps) ---
-def get_detailed_guidance(stress, domain, persona, focus, problem):
+
+# --- 2. THE AI GENERATOR ---
+def generate_roadmap(problem, persona, focus, domain):
+    """Calls Gemini to generate a highly tailored, first-person 3-phase roadmap."""
+    if not model:
+        # Fallback text if no API key is provided yet
+        return (
+            "No API Key Detected",
+            "Please add your Gemini API key at the top of the file to generate live roadmaps!",
+            "I'm ready to act as your collaborator, but I need my AI brain connected.",
+            "Add your API key to the script.", "Then click get help.", "Watch the magic happen."
+        )
+
+    prompt = f"""
+    You are an AI collaborator helping a user solve a problem. 
+    Act as: {persona}.
+    Primary focus: {focus}.
+    Domain: {domain}.
+    
+    The user is facing this issue: "{problem}"
+    
+    Provide a response in exactly this structure. Do not use the words 'Phase 1', 'Phase 2', or 'Phase 3' in your actual answers, just provide the advice. Speak in the first person. Do not quote back the user's settings.
+    
+    [HEADER]: A short, supportive 3-5 word title for this specific challenge.
+    [STRATEGY]: A warm, grounding 1-2 sentence high-level strategy to de-escalate or focus.
+    [INSIGHT]: A personal insight on how to approach this given the user's focus.
+    [P1]: What is the immediate triage or first step to stop the bleeding?
+    [P2]: How do they build momentum or execute the core solution next?
+    [P3]: What is the long-term resolution or system to prevent it?
+    """
+    
     try:
-        stress = int(stress)
-    except:
-        stress = 5
+        response = model.generate_content(prompt)
+        text = response.text
         
-    # 1. Header & Strategy based on Stress
-    if stress >= 8:
-        header = "🛑 Strategic De-escalation Roadmap"
-        strategy = "I can tell this is feeling incredibly heavy right now. My main goal here is to help you protect your energy and find solid ground. Let's not try to solve the whole puzzle today."
-        
-        phase_1 = "Pause everything. Put down whatever you are holding and identify the single most urgent thread of this problem. Disregard the rest for the next 24 hours. Your only job is to stop the bleeding."
-        phase_2 = "Once you have stabilized the immediate fire, let's look at what is causing the bottleneck. We will pick the smallest, most accessible action step to prove to yourself that you are making progress."
-        phase_3 = "After we establish that initial win, we can look at the bigger picture and figure out how to delegate, automate, or prevent this heavy friction from stacking up again."
-        
-    elif 4 <= stress <= 7:
-        header = "⚡ Progress & Momentum Roadmap"
-        strategy = "I see there is some friction here, but you've definitely got the energy to tackle it. Let's channel that into some steady momentum together."
-        
-        phase_1 = "Clear your physical workspace or close unnecessary tabs to remove background noise. Write down the top 3 things that need to happen today, and cross off the bottom 2."
-        phase_2 = "Execute the remaining task with full focus. Don't let yourself get distracted by perfect results—just focus on finishing and pushing the ball down the court."
-        phase_3 = "Once the immediate work is done, let's take a quick look at why this friction popped up and make a small system adjustment so it doesn't slow you down next time."
-        
-    else:
-        header = "🌱 Flow & Optimization Roadmap"
-        strategy = "Things are looking pretty clear here. I think this is a perfect window for us to organize, build systems, or just find some joy in refining your work."
-        
-        phase_1 = "Look at what you have already built or executed recently. Let's find one small tweak that would make it 10% more efficient or enjoyable for you to maintain."
-        phase_2 = "Use this calm window to map out your next big move or project. Since your stress is low, take a calculated risk or try a creative solution you wouldn't normally have the energy for."
-        phase_3 = "Reflect on how smooth this process felt. Let's document or lock in this workflow so we can replicate this low-stress environment in the future."
-
-    # 2. Personalized Insight shaped SILENTLY by Persona and Focus
-    if persona == "A supportive peer":
-        if focus == "Peace & Calm":
-            insight = "I want you to take a deep breath and remember that you don't have to carry all of this at once. Whatever we do next should make you feel lighter, not more burdened."
-        elif focus == "Speed & Momentum":
-            insight = "Let's link up and get a quick win under our belts. I'm right here with you, and I think getting one fast victory will shift the whole mood."
-        else:
-            insight = "Let's put our heads together on this. I want to help you find a path forward that feels genuinely good to execute."
+        # Simple parser to extract the custom tags
+        def extract(tag):
+            try: return text.split(f"[{tag}]:").split("[").strip()
+            except: return "I'm still processing this step..."
             
-    elif persona == "An objective strategist":
-        if focus == "Strict Problem Solving":
-            insight = "Let's look at the facts and strip away the noise. I want to help you map out the most logical, high-impact move available to us right now."
-        elif focus == "Depth & Quality":
-            insight = "I want to help you look at the foundation of this challenge. Let's make sure our next move is calculated and built to last."
-        else:
-            insight = "Let's evaluate the landscape here. I want to find the most efficient leverage point to shift this situation in your favor."
-            
-    else: # A creative visionary
-        if focus == "Peace & Calm":
-            insight = "I want to help you find the hidden harmony here. Let's look past the stress and see how this friction can guide us toward a more peaceful design."
-        else:
-            insight = "I see a really interesting opportunity hidden inside this challenge. Let's look at this from a fresh angle and create something unique."
-
-    return header, strategy, insight, phase_1, phase_2, phase_3
+        return extract("HEADER"), extract("STRATEGY"), extract("INSIGHT"), extract("P1"), extract("P2"), extract("P3")
+    except Exception as e:
+        return "Error", f"Could not connect to AI: {str(e)}", "Please check your API key.", "Error", "Error", "Error"
 
 
 # --- 3. THE INTERFACE ---
 st.title("Coda")
 st.write("A customizable space to map your next steps.")
 
-# Simple expander for settings
 with st.expander("🛠️ Personalize Your Help", expanded=True):
     col1, col2 = st.columns(2)
-    
     with col1:
         user_persona = st.selectbox("How do you want to be treated?", ["A supportive peer", "An objective strategist", "A creative visionary"])
         user_domain = st.selectbox("What domain are we focusing on?", ["Personal Life", "Technical/DIY Projects", "Advocacy/Community", "Financial Strategy"])
-        
     with col2:
         user_focus = st.selectbox("What is your primary focus right now?", ["Speed & Momentum", "Depth & Quality", "Peace & Calm", "Strict Problem Solving"])
         stress_val = st.select_slider("How heavy does it feel? (0 = Light, 10 = Heavy)", options=list(range(11)), value=5)
 
 st.write("") 
 
-problem_text = st.text_area("What friction or challenge are you facing?", height=150, placeholder="Type freely here...")
+# --- 4. THE INFINITE LOOP LOGIC ---
+if "history" not in st.session_state:
+    st.session_state.history = []
 
-st.write("") 
+problem_text = st.text_area("What friction or challenge are you facing?", height=100, placeholder="Type freely here...")
 
-# 1. Initialize our scratchpad so it remembers if we clicked the button
-if "consulted" not in st.session_state:
-    st.session_state.consulted = False
-    st.session_state.header = ""
-    st.session_state.strategy = ""
-    st.session_state.insight = ""
-    st.session_state.phase_1 = ""
-    st.session_state.phase_2 = ""
-    st.session_state.phase_3 = ""
-
-# 2. When the button is clicked, save the generated text to the scratchpad
-st.write("") 
-
-# 1. Initialize our scratchpad so it remembers if we clicked the button
-if "consulted" not in st.session_state:
-    st.session_state.consulted = False
-    st.session_state.header = ""
-    st.session_state.strategy = ""
-    st.session_state.insight = ""
-    st.session_state.phase_1 = ""
-    st.session_state.phase_2 = ""
-    st.session_state.phase_3 = ""
-
-# 2. When the button is clicked, save the generated text to the scratchpad
-if st.button("Get Help"):
+# First interaction
+if st.button("Get Help", key="main_btn"):
     if problem_text.strip():
-        # Call the logic function
-        h, s, i, p1, p2, p3 = get_detailed_guidance(stress_val, user_domain, user_persona, user_focus, problem_text)
-        
-        # Save them to session state so they survive the reruns!
-        st.session_state.consulted = True
-        st.session_state.header = h
-        st.session_state.strategy = s
-        st.session_state.insight = i
-        st.session_state.phase_1 = p1
-        st.session_state.phase_2 = p2
-        st.session_state.phase_3 = p3
+        # Clear old history on a fresh main search
+        st.session_state.history = []
+        h, s, i, p1, p2, p3 = generate_roadmap(problem_text, user_persona, user_focus, user_domain)
+        st.session_state.history.append({
+            "problem": problem_text, "header": h, "strategy": s, "insight": i,
+            "p1": p1, "p2": p2, "p3": p3
+        })
     else:
         st.info("Whenever you are ready, type what's on your mind above and click the button.")
 
-# 3. If we have consulted the system, ALWAYS show the results (even if typing reruns the script)
-if st.session_state.consulted:
+# Render the continuous, looping chain of roadmaps
+for idx, entry in enumerate(st.session_state.history):
     st.divider()
     
-    # Render the card
+    # Render the card for this level
     st.markdown(f"""
         <div class="custom-card">
-            <h2 style='color: #10b981; margin-top: 0;'>{st.session_state.header}</h2>
-            <p style='font-size: 1.1em; line-height: 1.6; color: #fce7f3;'><strong>The Strategy:</strong> {st.session_state.strategy}</p>
+            <h2 style='color: #10b981; margin-top: 0;'>Level {idx+1}: {entry['header']}</h2>
+            <p style='font-size: 1.1em; line-height: 1.6; color: #fce7f3;'><strong>The Strategy:</strong> {entry['strategy']}</p>
             <hr style='border-color: #ec4899; margin: 20px 0;'>
-            <p style='color: #fce7f3; font-size: 1.1em; margin-bottom: 5px;'>{st.session_state.insight}</p>
+            <p style='color: #fce7f3; font-size: 1.1em; margin-bottom: 5px;'>{entry['insight']}</p>
         </div>
     """, unsafe_allow_html=True)
     
-    # Render Phase 1
-    st.write("") 
+    # Phase 1 Loop
     st.markdown(f"#### 🛠️ Phase 1: Immediate Triage")
-    st.write(st.session_state.phase_1)
-    p1_text = st.text_input("Your notes / action plan for Phase 1:", key="phase1_input", placeholder="Type how you'll execute this here...")
-    
-    # Independent Get Help button for Phase 1
-    if st.button("Get Help with Phase 1"):
-        if p1_text.strip():
-            st.success(f"I hear you on that. Taking the step to '{p1_text}' sounds like a solid way to lock down Phase 1. Let's make it happen.")
-        else:
-            st.warning("Write down your plan above first, then click me to brainstorm!")
-            
-    # Render Phase 2
+    st.write(entry['p1'])
+    p1_in = st.text_input("Deepen this step / brainstorm your roadblock:", key=f"p1_in_{idx}", placeholder="Type what's hard about this step...")
+    if st.button("Get Help with this Step", key=f"p1_btn_{idx}"):
+        if p1_in.strip():
+            h, s, i, p1, p2, p3 = generate_roadmap(p1_in, user_persona, user_focus, user_domain)
+            st.session_state.history.append({"problem": p1_in, "header": h, "strategy": s, "insight": i, "p1": p1, "p2": p2, "p3": p3})
+            st.rerun()
+
+    # Phase 2 Loop
     st.write("") 
     st.markdown(f"#### ⚡ Phase 2: Building Momentum")
-    st.write(st.session_state.phase_2)
-    p2_text = st.text_input("Your notes / action plan for Phase 2:", key="phase2_input", placeholder="Type your milestones or tasks here...")
-    
-    # Independent Get Help button for Phase 2
-    if st.button("Get Help with Phase 2"):
-        if p2_text.strip():
-            st.success(f"I like where your head is at for Phase 2! Moving forward with '{p2_text}' is going to build some serious momentum.")
-        else:
-            st.warning("Jot down your milestones above first, and I'll help you look at them!")
-            
-    # Render Phase 3
+    st.write(entry['p2'])
+    p2_in = st.text_input("Deepen this step / brainstorm your roadblock:", key=f"p2_in_{idx}", placeholder="Type what's hard about this step...")
+    if st.button("Get Help with this Step", key=f"p2_btn_{idx}"):
+        if p2_in.strip():
+            h, s, i, p1, p2, p3 = generate_roadmap(p2_in, user_persona, user_focus, user_domain)
+            st.session_state.history.append({"problem": p2_in, "header": h, "strategy": s, "insight": i, "p1": p1, "p2": p2, "p3": p3})
+            st.rerun()
+
+    # Phase 3 Loop
     st.write("") 
     st.markdown(f"#### 🎯 Phase 3: Long-term Resolution")
-    st.write(st.session_state.phase_3)
-    p3_text = st.text_input("Your notes / action plan for Phase 3:", key="phase3_input", placeholder="Type how you'll prevent this next time...")
-    
-    # Independent Get Help button for Phase 3
-    if st.button("Get Help with Phase 3"):
-        if p3_text.strip():
-            st.success(f"Thinking about the future like that with '{p3_text}' is exactly how we prevent this from draining you next time. Great call.")
-        else:
-            st.warning("Drop your prevention strategy above and click me to review it!")
+    st.write(entry['p3'])
+    p3_in = st.text_input("Deepen this step / brainstorm your roadblock:", key=f"p3_in_{idx}", placeholder="Type what's hard about this step...")
+    if st.button("Get Help with this Step", key=f"p3_btn_{idx}"):
+        if p3_in.strip():
+            h, s, i, p1, p2, p3 = generate_roadmap(p3_in, user_persona, user_focus, user_domain)
+            st.session_state.history.append({"problem": p3_in, "header": h, "strategy": s, "insight": i, "p1": p1, "p2": p2, "p3": p3})
+            st.rerun()
