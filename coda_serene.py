@@ -130,18 +130,24 @@ if st.button("Get Help"):
             </div>
         """, unsafe_allow_html=True)
         
-        # 3. Clean Streamlit commands for the phases so they don't render as code!
+        # 3. Clean Streamlit commands for the phases with input fields!
         st.write("") 
         st.markdown(f"#### 🛠️ Phase 1: Immediate Triage")
         st.write(phase_1)
+        # Input field for Phase 1
+        st.text_input("Your notes / action plan for Phase 1:", key="phase1_input", placeholder="Type how you'll execute this here...")
         
         st.write("") 
         st.markdown(f"#### ⚡ Phase 2: Building Momentum")
         st.write(phase_2)
+        # Input field for Phase 2
+        st.text_input("Your notes / action plan for Phase 2:", key="phase2_input", placeholder="Type your milestones or tasks here...")
         
         st.write("") 
         st.markdown(f"#### 🎯 Phase 3: Long-term Resolution")
         st.write(phase_3)
+        # Input field for Phase 3
+        st.text_input("Your notes / action plan for Phase 3:", key="phase3_input", placeholder="Type how you'll prevent this next time...")
             
     else:
         st.info("Whenever you are ready, type what's on your mind above and click the button.")
