@@ -91,4 +91,6 @@ st.write("") # Adds a little clean spacing
 if st.button("Get a Next Step"):
     if problem_text.strip():
         output_html = get_guidance(stress_val, domain_choice, problem_text)
-        st.markdown(output_html
+        st.markdown(output_html, unsafe_allow_html=True)  # <-- Added the ')' right here
+    else:
+        st.info("Whenever you are ready, type what's on your mind above.")
