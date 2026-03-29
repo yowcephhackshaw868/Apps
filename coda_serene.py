@@ -33,39 +33,41 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 2. THE FLESHED-OUT LOGIC ---
-def get_detailed_guidance(stress, domain, persona, focus):
+# --- 2. THE MALLEABLE LOGIC ---
+def get_detailed_guidance(stress, domain, persona, focus, problem):
     try:
         stress = int(stress)
     except:
         stress = 5
         
+    # We build the advice directly out of the values you selected!
+    
+    # 1. Header & Strategy based on Stress
     if stress >= 8:
-        header = "🛑 Emergency De-escalation Path"
-        strategy = "When things are this heavy, your only goal is to stop the bleeding and find solid ground. Do not attempt to solve the whole problem today."
-        steps = [
-            "**Step 1 (First 60 Seconds):** Put down whatever you are holding. Take three slow breaths. Feel your feet on the floor. Right now, you are safe.",
-            "**Step 2 (The Next Hour):** Identify the single most urgent thread of this problem. Ignore the rest. What is the one thing that will cause a collapse if not handled? Do only that.",
-            f"**Step 3 (Moving Forward as a {persona}):** Lean heavily on your natural strengths. You don't have to carry the whole world. Step back and delegate or pause what you can."
-        ]
+        header = "🛑 Urgent De-escalation"
+        strategy = "When things feel this heavy, the priority is to protect your energy and find solid ground. Do not try to solve the whole puzzle today."
     elif 4 <= stress <= 7:
-        header = "⚡ Momentum & Progress Path"
-        strategy = "You have energy, but there is friction. The goal here is momentum over perfection. Let's break the paralysis and get moving."
-        steps = [
-            "**Step 1 (The Setup):** Clear your physical workspace or close unnecessary tabs. Visual clutter creates mental clutter.",
-            f"**Step 2 (The {domain} Approach):** Look at this through a structured lens. Write down the top 3 things that need to happen. Cross off the bottom 2.",
-            f"**Step 3 (Focusing on {focus}):** Since you want to prioritize {focus.lower()}, make your next action directly serve that goal. Do not get distracted by side quests."
-        ]
+        header = "⚡ Progress & Momentum"
+        strategy = "You are handling friction, but there is clear energy here. Let's channel that into momentum over perfection."
     else:
-        header = "🌱 Optimization & Growth Path"
-        strategy = "Things are flowing well. This is the perfect time to organize, build systems, and find joy in the process."
-        steps = [
-            "**Step 1 (Refine):** Look at what you've already built or done. What is one small tweak that would make it 10% more efficient or enjoyable?",
-            f"**Step 2 (The {persona} Vision):** How does solving this friction help you grow into the person you want to be? Take a moment to appreciate your progress.",
-            f"**Step 3 (The Master Move):** Since things are light, take a risk or try a creative solution you wouldn't normally have the energy for."
-        ]
+        header = "🌱 Flow & Optimization"
+        strategy = "Clear skies. This is a perfect window to organize, build systems, or find joy in refining your work."
 
-    return header, strategy, steps
+    # 2. Personalized Insight based on Persona and Focus
+    insight = f"Approaching this as **{persona.lower()}** focusing heavily on **{focus.lower()}**, you need a path that respects both."
+
+    # 3. Custom Action based on Domain
+    if domain == "Personal Life":
+        action = f"Look at the friction you mentioned: '*{problem}*'. Try to find one boundary or space you can create today that lets you breathe and reset."
+    elif domain == "Technical/DIY Projects":
+        action = f"Focusing on '*{problem}*', pick the absolute smallest component or line of code. Don't worry about the big picture yet—just get that one small gear to turn."
+    elif domain == "Advocacy/Community":
+        action = f"Regarding '*{problem}*', building bridges takes time. Who is one person in your community you can reach out to for a quick, grounding chat?"
+    else: # Financial Strategy
+        action = f"Looking at '*{problem}*', money and planning can be loud. Strip away the what-ifs and focus on the single move that protects or clarifies your position today."
+
+    return header, strategy, insight, action
+
 
 # --- 3. THE INTERFACE ---
 st.title("Coda")
@@ -83,7 +85,6 @@ with st.expander("🛠️ Personalize Your Help", expanded=True):
         user_focus = st.selectbox("What is your primary focus right now?", ["Speed & Momentum", "Depth & Quality", "Peace & Calm", "Strict Problem Solving"])
         stress_val = st.select_slider("How heavy does it feel? (0 = Light, 10 = Heavy)", options=list(range(11)), value=5)
 
-st.write("") # This goes back to the far left!
 st.write("") 
 
 problem_text = st.text_area("What friction or challenge are you facing?", height=150, placeholder="Type freely here...")
@@ -92,23 +93,20 @@ st.write("")
 
 if st.button("Consult the System"):
     if problem_text.strip():
-        header, strategy, steps = get_detailed_guidance(stress_val, user_domain, user_persona, user_focus)
+        header, strategy, insight, action = get_detailed_guidance(stress_val, user_domain, user_persona, user_focus, problem_text)
         
         st.divider()
         
-        # This draws the pretty card on the screen!
-        # This draws the pretty card on the screen!
+        # We no longer loop or repeat anything. It's just a clean, custom message!
         st.markdown(f"""
             <div class="custom-card">
                 <h2 style='color: #10b981; margin-top: 0;'>{header}</h2>
                 <p style='font-size: 1.1em; line-height: 1.6; color: #fce7f3;'><strong>The Strategy:</strong> {strategy}</p>
                 <hr style='border-color: #ec4899; margin: 20px 0;'>
-                <h4 style='color: #e2e8f0; margin-bottom: 10px;'>Your Tailored Action Plan:</h4>
-                <p style='color: #fce7f3; margin-bottom: 8px;'>{steps}</p>
-                <p style='color: #fce7f3; margin-bottom: 8px;'>{steps}</p>
-                <p style='color: #fce7f3; margin-bottom: 0;'>{steps}</p>
+                <p style='color: #fce7f3; font-size: 1.1em; margin-bottom: 12px;'>{insight}</p>
+                <p style='color: #fce7f3; font-size: 1.1em; line-height: 1.6;'><strong>Your Next Move:</strong> {action}</p>
             </div>
-        """, unsafe_allow_html=True) # <-- This closes line 98 perfectly!
+        """, unsafe_allow_html=True)
             
     else:
         st.info("Whenever you are ready, type what's on your mind above and click the button.")
