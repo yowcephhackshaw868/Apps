@@ -1,13 +1,13 @@
+import streamlit as st
+import google.generativeai as genai
+
 # --- 0. API SETUP ---
+# ⚠️ This key is public now, so remember to replace it in AI Studio later!
 GEMINI_API_KEY = "AIzaSyAgbORpMWLDGI0Yme-QxQ0VgFOexpkl3P8" 
 
-# Direct configuration without the conditional check
+# Now that we've imported it above, line 8 will work perfectly!
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-flash')
-# --- 1. SETTING THE MOOD ---
-st.set_page_config(page_title="Coda", layout="centered")
-
-st.markdown("""
     <style>
     .stButton button { 
         background-color: #10b981 !important; 
