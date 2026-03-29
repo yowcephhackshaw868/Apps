@@ -110,7 +110,7 @@ problem_text = st.text_area("What friction or challenge are you facing?", height
 st.write("") 
 
 # This is the part that was missing!
-if st.button("Consult the System"):
+if st.button("Get Help"):
     if problem_text.strip():
         header, strategy, insight, action = get_detailed_guidance(stress_val, user_domain, user_persona, user_focus, problem_text)
         
