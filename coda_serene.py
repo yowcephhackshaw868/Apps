@@ -67,7 +67,7 @@ def get_detailed_guidance(stress, domain, persona, focus):
 
     return header, strategy, steps
 
-
+with st.expander("🛠️ Personalize Your Help", expanded=True):
 # --- 3. THE INTERFACE ---
 st.title("Coda")
 st.write("A customizable space to map your next steps.")
