@@ -55,6 +55,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- 2. THE FLESHED-OUT LOGIC ---
+# --- 2. THE FLESHED-OUT LOGIC ---
 def get_detailed_guidance(stress, domain, persona, focus, problem):
     # Determine the core energy based on stress
     try:
@@ -70,3 +71,27 @@ def get_detailed_guidance(stress, domain, persona, focus, problem):
         steps = [
             "**Step 1 (First 60 Seconds):** Put down whatever you are holding. Take three slow breaths. Feel your feet on the floor. Right now, you are safe.",
             "**Step 2 (The Next Hour):** Identify the single most urgent thread of this problem. Ignore the rest. What is the one thing that will cause a collapse if not handled? Do only that.",
+            f"**Step 3 (Moving Forward as a {persona}):** Lean heavily on your natural strengths. You don't have to carry the whole world. Step back and delegate or pause what you can."
+        ]
+        
+    elif 4 <= stress <= 7:
+        bg_color = "#064e3b" # Deep green for active problem solving
+        header = "⚡ Momentum & Progress Path"
+        strategy = "You have energy, but there is friction. The goal here is momentum over perfection. Let's keep the wheels turning."
+        steps = [
+            "**Step 1 (The Setup):** Clear your physical workspace or close unnecessary tabs. Visual clutter creates mental clutter.",
+            f"**Step 2 (The {domain} Approach):** Look at this through a structured lens. Write down the top 3 things that need to happen. Cross off the bottom 2.",
+            f"**Step 3 (Focusing on {focus}):** Since you want to prioritize {focus.lower()}, make your next action directly serve that goal. Do not get distracted by side quests."
+        ]
+        
+    else:
+        bg_color = "#111827" # Black/Dark Gray for calm optimization
+        header = "🌱 Optimization & Growth Path"
+        strategy = "Things are flowing well. This is the perfect time to organize, build systems, and find joy in the process."
+        steps = [
+            "**Step 1 (Refine):** Look at what you've already built or done. What is one small tweak that would make it 10% more efficient or enjoyable?",
+            f"**Step 2 (The {persona} Vision):** How does solving this friction help you grow into the person you want to be? Take a moment to appreciate your progress.",
+            f"**Step 3 (The Master Move):** Since things are light, take a risk or try a creative solution you wouldn't normally have the energy for."
+        ]
+
+    return header, strategy, steps, bg_color
