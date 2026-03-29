@@ -39,10 +39,16 @@ def get_astro_logic(dob, tob):
 
 # --- THE ORACLE ENGINE ---
 def get_oracle_guidance(name, astro, stress, domain, problem):
-    def get_oracle_guidance(name, astro, stress, domain, problem):
-    # This safely handles lists or text and forces it to be a valid number
+    # 4 spaces in front of this line!
     if isinstance(stress, list):
-        stress = stress
+        stress = stress  # 8 spaces in front of this line!
+        
+    try:
+        stress = int(float(stress))  # 4 spaces here!
+    except (ValueError, TypeError):
+        stress = 5  # 8 spaces here!
+        
+    now = datetime.now().strftime("%H:%M")  # 4 spaces here!
     try:
         stress = int(float(stress))
     except (ValueError, TypeError):
