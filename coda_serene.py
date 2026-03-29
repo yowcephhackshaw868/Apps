@@ -4,7 +4,7 @@ from datetime import datetime
 # --- 1. SETTING THE MOOD ---
 st.set_page_config(page_title="Coda", layout="centered")
 
-# Safe CSS that only changes the button and card colors (won't blank the screen!)
+# Safe CSS that styles the button and the card border
 st.markdown("""
     <style>
     /* Vibrant Green Button with Black Text */
@@ -90,41 +90,6 @@ def get_detailed_guidance(stress, domain, persona, focus, problem):
 
     return header, strategy, insight, phase_1, phase_2, phase_3
 
-    # 2. Personalized Insight shaped SILENTLY by Persona and Focus
-    if persona == "A supportive peer":
-        if focus == "Peace & Calm":
-            insight = "I want you to take a deep breath and remember that you don't have to carry all of this at once. Whatever we do next should make you feel lighter, not more burdened."
-        elif focus == "Speed & Momentum":
-            insight = "Let's link up and get a quick win under our belts. I'm right here with you, and I think getting one fast victory will shift the whole mood."
-        else:
-            insight = "Let's put our heads together on this. I want to help you find a path forward that feels genuinely good to execute."
-            
-    elif persona == "An objective strategist":
-        if focus == "Strict Problem Solving":
-            insight = "Let's look at the facts and strip away the noise. I want to help you map out the most logical, high-impact move available to us right now."
-        elif focus == "Depth & Quality":
-            insight = "I want to help you look at the foundation of this challenge. Let's make sure our next move is calculated and built to last."
-        else:
-            insight = "Let's evaluate the landscape here. I want to find the most efficient leverage point to shift this situation in your favor."
-            
-    else: # A creative visionary
-        if focus == "Peace & Calm":
-            insight = "I want to help you find the hidden harmony here. Let's look past the stress and see how this friction can guide us toward a more peaceful design."
-        else:
-            insight = "I see a really interesting opportunity hidden inside this challenge. Let's look at this from a fresh angle and create something unique."
-
-    # 3. Custom Action based on Domain
-    if domain == "Personal Life":
-        action = "I've been thinking about what you're facing. My advice is to find just one small boundary or space you can create for yourself today. Let's give you a little room to breathe and reset."
-    elif domain == "Technical/DIY Projects":
-        action = "Looking at what you're building, I think our best move is to isolate the absolute smallest component or line of code causing the bottleneck. Let's ignore the big picture for a few minutes and just get that one small gear to turn."
-    elif domain == "Advocacy/Community":
-        action = "I know that building bridges and organizing takes a massive amount of time. I'd suggest reaching out to just one person in your circle for a quick, grounding chat today to share the load."
-    else: # Financial Strategy
-        action = "Money and planning can get so loud and overwhelming. I want us to strip away the big 'what-ifs' right now and focus on the single, most practical move that protects your position today."
-
-    return header, strategy, insight, action
-
 
 # --- 3. THE INTERFACE ---
 st.title("Coda")
@@ -148,23 +113,14 @@ problem_text = st.text_area("What friction or challenge are you facing?", height
 
 st.write("") 
 
-# This is the part that was missing!
 if st.button("Get Help"):
     if problem_text.strip():
-        header, strategy, insight, action = get_detailed_guidance(stress_val, user_domain, user_persona, user_focus, problem_text)
+        # Line 154 updated to match the 6 outputs!
+        header, strategy, insight, phase_1, phase_2, phase_3 = get_detailed_guidance(stress_val, user_domain, user_persona, user_focus, problem_text)
         
         st.divider()
         
-        # This draws the pretty card on the screen!
+        # This draws the pretty, long-form roadmap card on the screen!
         st.markdown(f"""
             <div class="custom-card">
-                <h2 style='color: #10b981; margin-top: 0;'>{header}</h2>
-                <p style='font-size: 1.1em; line-height: 1.6; color: #fce7f3;'><strong>The Strategy:</strong> {strategy}</p>
-                <hr style='border-color: #ec4899; margin: 20px 0;'>
-                <p style='color: #fce7f3; font-size: 1.1em; margin-bottom: 12px;'>{insight}</p>
-                <p style='color: #fce7f3; font-size: 1.1em; line-height: 1.6;'><strong>Your Next Move:</strong> {action}</p>
-            </div>
-        """, unsafe_allow_html=True)
-            
-    else:
-        st.info("Whenever you are ready, type what's on your mind above and click the button.")
+                <h2 style='color: #10b981; margin-top: 0;'>{header}
