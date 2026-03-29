@@ -1,16 +1,9 @@
-import streamlit as st
-import google.generativeai as genai
-
 # --- 0. API SETUP ---
-# Replace this with your actual Gemini API key to activate the "brain"
-GEMINI_API_KEY = "AIzaSyAARJHCZngMW4ybe4labAQ6EvPDDfOu_E4" 
+GEMINI_API_KEY = "AIzaSyAgbORpMWLDGI0Yme-QxQ0VgFOexpkl3P8" 
 
-if GEMINI_API_KEY != "AIzaSyAARJHCZngMW4ybe4labAQ6EvPDDfOu_E4":
-    genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel('gemini-1.5-flash')
-else:
-    model = None
-
+# Direct configuration without the conditional check
+genai.configure(api_key=GEMINI_API_KEY)
+model = genai.GenerativeModel('gemini-1.5-flash')
 # --- 1. SETTING THE MOOD ---
 st.set_page_config(page_title="Coda", layout="centered")
 
