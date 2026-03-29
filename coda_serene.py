@@ -8,32 +8,31 @@ GEMINI_API_KEY = "AIzaSyAgbORpMWLDGI0Yme-QxQ0VgFOexpkl3P8"
 # Now that we've imported it above, line 8 will work perfectly!
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-flash')
-    <style>
-    .stButton button { 
-        background-color: #10b981 !important; 
-        color: #000000 !important; 
-        border-radius: 12px; 
-        font-weight: bold;
-        height: 3.5em;
-        width: 100%;
-        border: 2px solid #e2e8f0 !important;
-    }
-    .stButton button:hover { 
-        background-color: #059669 !important; 
-        color: #ffffff !important;
-    }
-    .custom-card {
-        padding: 25px;
-        border-radius: 16px;
-        margin-top: 20px;
-        margin-bottom: 20px;
-        border: 2px solid #ec4899; 
-        background-color: #1f2937; 
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-
+    st.markdown("""
+<style>
+.stButton button { 
+    background-color: #10b981 !important; 
+    color: #000000 !important; 
+    border-radius: 12px; 
+    font-weight: bold;
+    height: 3.5em;
+    width: 100%;
+    border: 2px solid #e2e8f0 !important;
+}
+.stButton button:hover { 
+    background-color: #059669 !important; 
+    color: #ffffff !important;
+}
+.custom-card {
+    padding: 25px;
+    border-radius: 16px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 2px solid #ec4899; 
+    background-color: #1f2937; 
+}
+</style>
+""", unsafe_allow_html=True)
 # --- 2. THE AI GENERATOR ---
 def generate_roadmap(problem, persona, focus, domain):
     """Calls Gemini to generate a highly tailored, first-person 3-phase roadmap."""
