@@ -113,41 +113,59 @@ problem_text = st.text_area("What friction or challenge are you facing?", height
 
 st.write("") 
 
+# 1. Initialize our scratchpad so it remembers if we clicked the button
+if "consulted" not in st.session_state:
+    st.session_state.consulted = False
+    st.session_state.header = ""
+    st.session_state.strategy = ""
+    st.session_state.insight = ""
+    st.session_state.phase_1 = ""
+    st.session_state.phase_2 = ""
+    st.session_state.phase_3 = ""
+
+# 2. When the button is clicked, save the generated text to the scratchpad
 if st.button("Get Help"):
     if problem_text.strip():
-        # 1. Unpack the 6 pieces of data from your function
-        header, strategy, insight, phase_1, phase_2, phase_3 = get_detailed_guidance(stress_val, user_domain, user_persona, user_focus, problem_text)
+        # Call the logic function
+        h, s, i, p1, p2, p3 = get_detailed_guidance(stress_val, user_domain, user_persona, user_focus, problem_text)
         
-        st.divider()
-        
-        # 2. Render the top of the card using HTML for the background
-        st.markdown(f"""
-            <div class="custom-card">
-                <h2 style='color: #10b981; margin-top: 0;'>{header}</h2>
-                <p style='font-size: 1.1em; line-height: 1.6; color: #fce7f3;'><strong>The Strategy:</strong> {strategy}</p>
-                <hr style='border-color: #ec4899; margin: 20px 0;'>
-                <p style='color: #fce7f3; font-size: 1.1em; margin-bottom: 5px;'>{insight}</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        # 3. Clean Streamlit commands for the phases with input fields!
-        st.write("") 
-        st.markdown(f"#### 🛠️ Phase 1: Immediate Triage")
-        st.write(phase_1)
-        # Input field for Phase 1
-        st.text_input("Your notes / action plan for Phase 1:", key="phase1_input", placeholder="Type how you'll execute this here...")
-        
-        st.write("") 
-        st.markdown(f"#### ⚡ Phase 2: Building Momentum")
-        st.write(phase_2)
-        # Input field for Phase 2
-        st.text_input("Your notes / action plan for Phase 2:", key="phase2_input", placeholder="Type your milestones or tasks here...")
-        
-        st.write("") 
-        st.markdown(f"#### 🎯 Phase 3: Long-term Resolution")
-        st.write(phase_3)
-        # Input field for Phase 3
-        st.text_input("Your notes / action plan for Phase 3:", key="phase3_input", placeholder="Type how you'll prevent this next time...")
-            
+        # Save them to session state so they survive the reruns!
+        st.session_state.consulted = True
+        st.session_state.header = h
+        st.session_state.strategy = s
+        st.session_state.insight = i
+        st.session_state.phase_1 = p1
+        st.session_state.phase_2 = p2
+        st.session_state.phase_3 = p3
     else:
         st.info("Whenever you are ready, type what's on your mind above and click the button.")
+
+# 3. If we have consulted the system, ALWAYS show the results (even if typing reruns the script)
+if st.session_state.consulted:
+    st.divider()
+    
+    # Render the card
+    st.markdown(f"""
+        <div class="custom-card">
+            <h2 style='color: #10b981; margin-top: 0;'>{st.session_state.header}</h2>
+            <p style='font-size: 1.1em; line-height: 1.6; color: #fce7f3;'><strong>The Strategy:</strong> {st.session_state.strategy}</p>
+            <hr style='border-color: #ec4899; margin: 20px 0;'>
+            <p style='color: #fce7f3; font-size: 1.1em; margin-bottom: 5px;'>{st.session_state.insight}</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Render the phases and inputs
+    st.write("") 
+    st.markdown(f"#### 🛠️ Phase 1: Immediate Triage")
+    st.write(st.session_state.phase_1)
+    st.text_input("Your notes / action plan for Phase 1:", key="phase1_input", placeholder="Type how you'll execute this here...")
+    
+    st.write("") 
+    st.markdown(f"#### ⚡ Phase 2: Building Momentum")
+    st.write(st.session_state.phase_2)
+    st.text_input("Your notes / action plan for Phase 2:", key="phase2_input", placeholder="Type your milestones or tasks here...")
+    
+    st.write("") 
+    st.markdown(f"#### 🎯 Phase 3: Long-term Resolution")
+    st.write(st.session_state.phase_3)
+    st.text_input("Your notes / action plan for Phase 3:", key="phase3_input", placeholder="Type how you'll prevent this next time...")
