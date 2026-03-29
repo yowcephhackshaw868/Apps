@@ -67,17 +67,18 @@ def get_detailed_guidance(stress, domain, persona, focus):
 
     return header, strategy, steps
 
-with st.expander("🛠️ Personalize Your Help", expanded=True):
-# --- 3. THE INTERFACE ---
-st.title("Coda")
-st.write("A customizable space to map your next steps.")
-
 # Simple expander for settings
-with st.expander("🛠️ Personalize Your Oracle", expanded=True):
+with st.expander("🛠️ Personalize Your Help", expanded=True):
+    # Notice that ALL these lines below are pushed in by 4 spaces!
     col1, col2 = st.columns(2)
     with col1:
         user_persona = st.selectbox("How do you want to be treated?", ["A supportive peer", "An objective strategist", "A creative visionary"])
         user_domain = st.selectbox("What domain are we focusing on?", ["Personal Life", "Technical/DIY Projects", "Advocacy/Community", "Financial Strategy"])
+    with col2:
+        user_focus = st.selectbox("What is your primary focus right now?", ["Speed & Momentum", "Depth & Quality", "Peace & Calm", "Strict Problem Solving"])
+        stress_val = st.select_slider("How heavy does it feel? (0 = Light, 10 = Heavy)", options=list(range(11)), value=5)
+
+st.write("") # This line goes back to the far left because it's outside the expander!
     with col2:
         user_focus = st.selectbox("What is your primary focus right now?", ["Speed & Momentum", "Depth & Quality", "Peace & Calm", "Strict Problem Solving"])
         stress_val = st.select_slider("How heavy does it feel? (0 = Light, 10 = Heavy)", options=list(range(11)), value=5)
