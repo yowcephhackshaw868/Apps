@@ -39,6 +39,13 @@ def get_astro_logic(dob, tob):
 
 # --- THE ORACLE ENGINE ---
 def get_oracle_guidance(name, astro, stress, domain, problem):
+    stress = int(stress)  # <-- ADD THIS LINE HERE
+    
+    now = datetime.now().strftime("%H:%M")
+    
+    # Color logic based on "Inner Volume"
+    if stress >= 8: 
+        color = "#4b0000" # Deep Garnet
     now = datetime.now().strftime("%H:%M")
     
     # Color logic based on "Inner Volume"
