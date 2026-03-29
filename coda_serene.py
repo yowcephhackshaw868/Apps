@@ -95,10 +95,18 @@ if st.button("Consult the System"):
         st.divider()
         
         # This draws the pretty card on the screen!
+        # This draws the pretty card on the screen!
         st.markdown(f"""
             <div class="custom-card">
                 <h2 style='color: #10b981; margin-top: 0;'>{header}</h2>
                 <p style='font-size: 1.1em; line-height: 1.6; color: #fce7f3;'><strong>The Strategy:</strong> {strategy}</p>
                 <hr style='border-color: #ec4899; margin: 20px 0;'>
                 <h4 style='color: #e2e8f0; margin-bottom: 10px;'>Your Tailored Action Plan:</h4>
-                <p style='color: #fce7f3; margin-bottom:
+                <p style='color: #fce7f3; margin-bottom: 8px;'>{steps}</p>
+                <p style='color: #fce7f3; margin-bottom: 8px;'>{steps}</p>
+                <p style='color: #fce7f3; margin-bottom: 0;'>{steps}</p>
+            </div>
+        """, unsafe_allow_html=True) # <-- This closes line 98 perfectly!
+            
+    else:
+        st.info("Whenever you are ready, type what's on your mind above and click the button.")
