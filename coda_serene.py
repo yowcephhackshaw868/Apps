@@ -124,6 +124,19 @@ if "consulted" not in st.session_state:
     st.session_state.phase_3 = ""
 
 # 2. When the button is clicked, save the generated text to the scratchpad
+st.write("") 
+
+# 1. Initialize our scratchpad so it remembers if we clicked the button
+if "consulted" not in st.session_state:
+    st.session_state.consulted = False
+    st.session_state.header = ""
+    st.session_state.strategy = ""
+    st.session_state.insight = ""
+    st.session_state.phase_1 = ""
+    st.session_state.phase_2 = ""
+    st.session_state.phase_3 = ""
+
+# 2. When the button is clicked, save the generated text to the scratchpad
 if st.button("Get Help"):
     if problem_text.strip():
         # Call the logic function
@@ -154,18 +167,41 @@ if st.session_state.consulted:
         </div>
     """, unsafe_allow_html=True)
     
-    # Render the phases and inputs
+    # Render Phase 1
     st.write("") 
     st.markdown(f"#### 🛠️ Phase 1: Immediate Triage")
     st.write(st.session_state.phase_1)
-    st.text_input("Your notes / action plan for Phase 1:", key="phase1_input", placeholder="Type how you'll execute this here...")
+    p1_text = st.text_input("Your notes / action plan for Phase 1:", key="phase1_input", placeholder="Type how you'll execute this here...")
     
+    # Independent Get Help button for Phase 1
+    if st.button("Get Help with Phase 1"):
+        if p1_text.strip():
+            st.success(f"I hear you on that. Taking the step to '{p1_text}' sounds like a solid way to lock down Phase 1. Let's make it happen.")
+        else:
+            st.warning("Write down your plan above first, then click me to brainstorm!")
+            
+    # Render Phase 2
     st.write("") 
     st.markdown(f"#### ⚡ Phase 2: Building Momentum")
     st.write(st.session_state.phase_2)
-    st.text_input("Your notes / action plan for Phase 2:", key="phase2_input", placeholder="Type your milestones or tasks here...")
+    p2_text = st.text_input("Your notes / action plan for Phase 2:", key="phase2_input", placeholder="Type your milestones or tasks here...")
     
+    # Independent Get Help button for Phase 2
+    if st.button("Get Help with Phase 2"):
+        if p2_text.strip():
+            st.success(f"I like where your head is at for Phase 2! Moving forward with '{p2_text}' is going to build some serious momentum.")
+        else:
+            st.warning("Jot down your milestones above first, and I'll help you look at them!")
+            
+    # Render Phase 3
     st.write("") 
     st.markdown(f"#### 🎯 Phase 3: Long-term Resolution")
     st.write(st.session_state.phase_3)
-    st.text_input("Your notes / action plan for Phase 3:", key="phase3_input", placeholder="Type how you'll prevent this next time...")
+    p3_text = st.text_input("Your notes / action plan for Phase 3:", key="phase3_input", placeholder="Type how you'll prevent this next time...")
+    
+    # Independent Get Help button for Phase 3
+    if st.button("Get Help with Phase 3"):
+        if p3_text.strip():
+            st.success(f"Thinking about the future like that with '{p3_text}' is exactly how we prevent this from draining you next time. Great call.")
+        else:
+            st.warning("Drop your prevention strategy above and click me to review it!")
