@@ -65,3 +65,47 @@ def get_detailed_guidance(stress, domain, persona, focus, problem):
         action = "Money and planning can get so loud and overwhelming. I want us to strip away the big 'what-ifs' right now and focus on the single, most practical move that protects your position today."
 
     return header, strategy, insight, action
+
+
+# --- 3. THE INTERFACE ---
+st.title("Coda")
+st.write("A customizable space to map your next steps.")
+
+# Simple expander for settings
+with st.expander("🛠️ Personalize Your Help", expanded=True):
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        user_persona = st.selectbox("How do you want to be treated?", ["A supportive peer", "An objective strategist", "A creative visionary"])
+        user_domain = st.selectbox("What domain are we focusing on?", ["Personal Life", "Technical/DIY Projects", "Advocacy/Community", "Financial Strategy"])
+        
+    with col2:
+        user_focus = st.selectbox("What is your primary focus right now?", ["Speed & Momentum", "Depth & Quality", "Peace & Calm", "Strict Problem Solving"])
+        stress_val = st.select_slider("How heavy does it feel? (0 = Light, 10 = Heavy)", options=list(range(11)), value=5)
+
+st.write("") 
+
+problem_text = st.text_area("What friction or challenge are you facing?", height=150, placeholder="Type freely here...")
+
+st.write("") 
+
+# This is the part that was missing!
+if st.button("Consult the System"):
+    if problem_text.strip():
+        header, strategy, insight, action = get_detailed_guidance(stress_val, user_domain, user_persona, user_focus, problem_text)
+        
+        st.divider()
+        
+        # This draws the pretty card on the screen!
+        st.markdown(f"""
+            <div class="custom-card">
+                <h2 style='color: #10b981; margin-top: 0;'>{header}</h2>
+                <p style='font-size: 1.1em; line-height: 1.6; color: #fce7f3;'><strong>The Strategy:</strong> {strategy}</p>
+                <hr style='border-color: #ec4899; margin: 20px 0;'>
+                <p style='color: #fce7f3; font-size: 1.1em; margin-bottom: 12px;'>{insight}</p>
+                <p style='color: #fce7f3; font-size: 1.1em; line-height: 1.6;'><strong>Your Next Move:</strong> {action}</p>
+            </div>
+        """, unsafe_allow_html=True)
+            
+    else:
+        st.info("Whenever you are ready, type what's on your mind above and click the button.")
