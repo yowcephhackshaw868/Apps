@@ -37,17 +37,10 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 # --- 2. THE AI GENERATOR ---
-def generate_roadmap(problem, persona, focus, domain):
-    """Calls Gemini to generate a highly tailored, first-person 3-phase roadmap."""
-    if not model:
-        # Fallback text if no API key is provided yet
-        return (
-            "No API Key Detected",
-            "Please add your Gemini API key at the top of the file to generate live roadmaps!",
-            "I'm ready to act as your collaborator, but I need my AI brain connected.",
-            "Add your API key to the script.", "Then click get help.", "Watch the magic happen."
-        )
+import json
 
+def generate_roadmap(problem, persona, focus, domain):
+    """Calls Gemini to generate a highly tailored, first-person 3-phase roadmap using JSON."""
     prompt = f"""
     You are an AI collaborator helping a user solve a problem. 
     Act as: {persona}.
@@ -56,30 +49,39 @@ def generate_roadmap(problem, persona, focus, domain):
     
     The user is facing this issue: "{problem}"
     
-    Provide a response in exactly this structure. Do not use the words 'Phase 1', 'Phase 2', or 'Phase 3' in your actual answers, just provide the advice. Speak in the first person. Do not quote back the user's settings.
-    
-    [HEADER]: A short, supportive 3-5 word title for this specific challenge.
-    [STRATEGY]: A warm, grounding 1-2 sentence high-level strategy to de-escalate or focus.
-    [INSIGHT]: A personal insight on how to approach this given the user's focus.
-    [P1]: What is the immediate triage or first step to stop the bleeding?
-    [P2]: How do they build momentum or execute the core solution next?
-    [P3]: What is the long-term resolution or system to prevent it?
+    Provide your response in raw JSON format with exactly these 6 string keys:
+    "HEADER": A short, supportive 3-5 word title for this specific challenge.
+    "STRATEGY": A warm, grounding 1-2 sentence high-level strategy to de-escalate or focus.
+    "INSIGHT": A personal insight on how to approach this given the user's focus.
+    "P1": What is the immediate triage or first step to stop the bleeding?
+    "P2": How do they build momentum or execute the core solution next?
+    "P3": What is the long-term resolution or system to prevent it?
+
+    Speak in the first person. Do not quote back the user's settings. Do not use the words 'Phase 1', 'Phase 2', or 'Phase 3' in your actual answers.
     """
     
     try:
-        response = model.generate_content(prompt)
-        text = response.text
+        # Force the model to reply strictly in JSON format
+        response = model.generate_content(
+            prompt,
+            generation_config={"response_mime_type": "application/json"}
+        )
         
-        # Simple parser to extract the custom tags
-        def extract(tag):
-            try: return text.split(f"[{tag}]:").split("[").strip()
-            except: return "I'm still processing this step..."
-            
-        return extract("HEADER"), extract("STRATEGY"), extract("INSIGHT"), extract("P1"), extract("P2"), extract("P3")
+        # Parse the JSON grid directly! No more buggy text splitting.
+        data = json.loads(response.text)
+        
+        return (
+            data.get("HEADER", "Challenge Accepted"),
+            data.get("STRATEGY", "Let's take a breath and handle this step by step."),
+            data.get("INSIGHT", "Here is how I see us approaching this."),
+            data.get("P1", "Take a step back to assess the immediate needs."),
+            data.get("P2", "Build on your initial actions to gain steady ground."),
+            data.get("P3", "Map out a routine to ensure this doesn't repeat.")
+        )
+        
     except Exception as e:
-        return "Error", f"Could not connect to AI: {str(e)}", "Please check your API key.", "Error", "Error", "Error"
-
-
+        # If the JSON failed to parse or there's an API error
+        return "Error", f"Could not build layout: {str(e)}", "Please try clicking the button again.", "Error", "Error", "Error"
 # --- 3. THE INTERFACE ---
 st.title("Coda")
 st.write("A customizable space to map your next steps.")
