@@ -81,7 +81,7 @@ with st.sidebar:
 
 # --- MAIN: THE LOOM ---
 st.header("The Loom of Reality")
-col1, col2 = st.columns(spec=)
+col1, col2 = st.columns(2)
 
 with col1:
     domain_choice = st.selectbox("Select Domain", ["General/Serene", "Technical/DIY", "Financial/Property", "Community/Advocacy"])
